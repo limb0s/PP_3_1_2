@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" >
+    <meta charset="UTF-8">
     <title>New user</title>
 </head>
 <body>
 <form th:method="POST" th:action="@{/admin/addUser}" th:object="${user}">
     <label for="name">Enter name: </label>
     <input th:type="text" th:field="*{name}" id="name">
+    <div style="color: red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
+    <br/>
     <br/>
     <label for="age">Enter age: </label>
     <input th:type="text" th:field="*{age}" id="age">
+    <div style="color: red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Name error</div>
+    <br/>
     <br/>
     <label for="username">Enter username: </label>
     <input th:type="text" th:field="*{username}" id="username">
+    <div style="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name error</div>
+    <br/>
     <br/>
     <label for="password">Enter password: </label>
     <input th:type="text" th:field="*{password}" id="password">
     <br/>
-    <label>Choose roles:</label>
-    <div th:each="role : ${user.roles}">
-        <input type="checkbox" th:field="*{roles}" th:value="${role.id}" id="role-[[${role.id}]]" />
-        <label th:for="'role-' + ${role.id}" th:text="${role.name}"></label>
-    </div>
+    <br/>
+    <p>
+        <label>Roles:
+            <input type="checkbox" name="roles"
+                   th:each="role : ${user.getRoles()}"
+                   th:text="${role.getName()}"
+                   th:value="${role.getId()}"
+                   th:field="*{roles}"
+            />
+            <div style="color: red" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">Name error</div>
+        </label>
+    </p>
     <br/>
     <a th:href="@{/admin}" class="button">Back</a>
     <br/>

@@ -8,7 +8,7 @@ import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,12 +24,12 @@ public class StartUserAndAdmin {
     }
 
     @PostConstruct
-    private  void init(){
-        roleRepository.save(new Role(1L,"ROLE_ADMIN"));
-        roleRepository.save(new Role(2L,"ROLE_USER"));
-        List<Role> adminRole = roleRepository.findById(1L).stream().collect(Collectors.toList());
-        List<Role> userRole = roleRepository.findById(2L).stream().collect(Collectors.toList());
-        userService.saveUser(new User("Elena",30,"admin","admin",adminRole));
-        userService.saveUser(new User("Oleg",21,"user","user",userRole));
+    private void init() {
+        roleRepository.save(new Role(1L, "ROLE_ADMIN"));
+        roleRepository.save(new Role(2L, "ROLE_USER"));
+        Set<Role> adminRole = roleRepository.findById(1L).stream().collect(Collectors.toSet());
+        Set<Role> userRole = roleRepository.findById(2L).stream().collect(Collectors.toSet());
+        userService.saveUser(new User("Elena", 30, "admin", "admin", adminRole));
+        userService.saveUser(new User("Oleg", 21, "user", "user", userRole));
     }
 }

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.orElse(new User());
+        return user.orElse(null);
     }
 
     @Transactional
@@ -55,9 +55,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
         }
-        if (userRepository.findAll().isEmpty()) {
-            SecurityContextHolder.clearContext();
-        }
     }
 
     @Transactional
@@ -69,9 +66,7 @@ public class UserServiceImpl implements UserService {
             existingUser.setName(user.getName());
             existingUser.setAge(user.getAge());
             existingUser.setUsername(user.getUsername());
-            if (!user.getPassword().equals(existingUser.getPassword())) {
-                existingUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-            }
+            existingUser.setPassword(user.getPassword());
             existingUser.setRoles(user.getRoles());
             userRepository.save(existingUser);
 

@@ -5,11 +5,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User implements UserDetails {
 
     @Id
@@ -17,23 +21,33 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotEmpty
+    @Size(min = 2, max = 30,message = "Имя должно быть в диапозоне 2-30 символов")
     @Column(name = "name")
     private String name;
 
+    @Min(value = 1,message = "Возраст должен быть больше 0")
     @Column(name = "age")
     private int age;
 
+    @NotEmpty
+    @Size(min = 2, max = 30,message = "Имя пользователя должно быть в диапозоне 2-30 символов")
     @Column(name = "username")
     private String username;
+
 
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="user_roles",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles;
+    private transient String currentPassword;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @NotNull(message = "Поле roles не может быть пустым")
+    @Size(min = 1, message = "Необходимо выбрать как минимум одну роль")
+    private Set<Role> roles;
 
     public User() {
     }
@@ -45,7 +59,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public User(String name, int age, String username, String password, List<Role> roles) {
+    public User(String name, int age, String username, String password, Set<Role> roles) {
         this.name = name;
         this.age = age;
         this.username = username;
@@ -85,11 +99,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -126,6 +140,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
 }
 
